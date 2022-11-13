@@ -19,6 +19,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
+  "homepage": "http://creactivate.github.io/lightbulb-calc",
   "eslintConfig": {
     "extends": [
       "react-app",
