@@ -86,11 +86,11 @@ function App() {
     let tmpSetRoiInFirstYear = calcRoiInFirstYear(tmpSetSavedPerYear, tmpSetCostToReplace)
     let tmpSetKgCo2SavingPerYear = calcKgCo2SavingPerYear(tmpSetKwhSavingPerYear, emissionsPerKwh)
 
-    setCostToReplace(tmpSetCostToReplace)
-    setSavedPerYear(tmpSetSavedPerYear)
-    setRoiInFirstYear(tmpSetRoiInFirstYear)
-    setKwhSavingPerYear(tmpSetKwhSavingPerYear)
-    setKgCo2SavingPerYear(tmpSetKgCo2SavingPerYear)
+    setCostToReplace(tmpSetCostToReplace || 0)
+    setSavedPerYear(tmpSetSavedPerYear || 0)
+    setRoiInFirstYear(tmpSetRoiInFirstYear || 0)
+    setKwhSavingPerYear(tmpSetKwhSavingPerYear || 0)
+    setKgCo2SavingPerYear(tmpSetKgCo2SavingPerYear || 0)
     
     // output variables
     localStorage.setItem("roiInFirstYear", roiInFirstYear)
@@ -113,35 +113,35 @@ function App() {
     <div className="App">
       <h1>Lightbulb Savings Calculator</h1>
       <h2>Amount Saved: {formatter.format(savedPerYear)}</h2>
-      <div>Cost to replace {formatter.format(costToReplace)}</div>
-      <div>roiInFirstYear {formatter.format(roiInFirstYear)}</div>
-      <div>kwhSavingPerYear {kwhSavingPerYear}</div>
-      <div>kgCo2SavingPerYear {kgCo2SavingPerYear}</div>
+      <div>Cost to replace: {formatter.format(costToReplace)}</div>
+      <div>Return on Investment In First Year: {formatter.format(roiInFirstYear)}</div>
+      <div>Energy Saving Per Year (kWh): {kwhSavingPerYear}</div>
+      <div>Co2 Saving Per Year (kg): {kgCo2SavingPerYear}</div>
       <br/>
       <form className="calc-form">
         <label>Bulb Wattage (To be replaced)
-          <input type="number" value={wattageToBeReplaced} onChange={(e)=> setWattageToBeReplaced(parseInt(e.target.value) || 0)}/>
+          <input type="number" value={wattageToBeReplaced} onChange={(e)=> setWattageToBeReplaced(parseInt(e.target.value))}/>
         </label>
         <label>Bulb Wattage (Replacement)
-          <input type="number" value={wattageReplacement} onChange={(e)=> setWattageReplacement(parseInt(e.target.value) || 0)}/>
+          <input type="number" value={wattageReplacement} onChange={(e)=> setWattageReplacement(parseInt(e.target.value))}/>
         </label>
         <label>Running Time (Hours per day)
-          <input type="number" value={runningTimeHPD} onChange={(e)=> setRunningTimeHPD(e.target.value || 0)}/>
+          <input type="number" value={runningTimeHPD} onChange={(e)=> setRunningTimeHPD(e.target.value)}/>
         </label>
         <label>Energy Cost (kWh)
-          <input type="number" value={energyCost} onChange={(e)=> setEnergyCost(e.target.value || 0)}/>
+          <input type="number" value={energyCost} onChange={(e)=> setEnergyCost(e.target.value)}/>
         </label>
         <label>Number of bulbs replaced
-          <input type="number" value={numberOfBulbsReplaced} onChange={(e)=> setNumberOfBulbsReplaced(parseInt(e.target.value) || 0)}/>
+          <input type="number" value={numberOfBulbsReplaced} onChange={(e)=> setNumberOfBulbsReplaced(parseInt(e.target.value))}/>
         </label>
         <label>Cost per bulb
-          <input type="number" value={costPerBulb} onChange={(e)=> setCostPerBulb(e.target.value || 0)}/>
+          <input type="number" value={costPerBulb} onChange={(e)=> setCostPerBulb(e.target.value)}/>
         </label>
         <label>MyReward Discount
-          <input type="number" value={myRewardDiscount} onChange={(e)=> setMyRewardDiscount(e.target.value || 0)}/>
+          <input type="number" value={myRewardDiscount} onChange={(e)=> setMyRewardDiscount(e.target.value)}/>
         </label>
         <label>CO2 Emissions (kg/kWh)
-          <input type="number" value={emissionsPerKwh} onChange={(e)=> setEmissionsPerKWH(e.target.value || 0)}/>
+          <input type="number" value={emissionsPerKwh} onChange={(e)=> setEmissionsPerKWH(e.target.value)}/>
         </label>
         {/* <label>Contribution frequency
           <select value={lightbulb type} onChange={(e)=> setLightbulbType(e.target.value)}>
