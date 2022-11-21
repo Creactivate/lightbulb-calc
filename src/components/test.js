@@ -113,6 +113,15 @@ class AppComponent extends React.Component {
           results: this.state.results,
           simple: !this.state.simple
         })
+        if (document.getElementById('toggleButton').style.backgroundColor == 'rgb(255, 255, 255)') {
+          document.getElementById('toggleButton').style.backgroundColor = 'rgb(0, 41, 121)';
+          document.getElementById('toggleButton').style.color = 'rgb(255, 255, 255)';
+          // document.getElementById('toggleButton').style.border = '5px solid rgb(255, 255, 255)'
+        }else {
+          document.getElementById('toggleButton').style.backgroundColor = 'rgb(255, 255, 255)';
+          // document.getElementById('toggleButton').style.border = '5px solid rgb(0, 41, 121)'
+          document.getElementById('toggleButton').style.color = 'rgb(0, 41, 121)';
+        }
       }
   
       return (
@@ -124,7 +133,7 @@ class AppComponent extends React.Component {
         <div>Energy Saving Per Year (kWh): {calcGlobalValues().kwhSavingPerYear}</div>
         <div>Co2 Saving Per Year (kg): {calcGlobalValues().kgCo2SavingPerYear}</div>
         <br/>
-        <input type='button' value='Toggle Simple/Advanced Fields' onClick={toggleSimple} />
+        <input id='toggleButton' className='buttons' type='button' value='Toggle Simple/Advanced Fields' onClick={toggleSimple} />
         <ParentComponent addChild={this.onAddChild} removeChild={this.onRemoveChild} simple={this.state.simple}>
           {children}
         </ParentComponent>
@@ -198,7 +207,7 @@ class AppComponent extends React.Component {
   
   const ParentComponent = props => (
     <div className="card calculator">
-      <h3><a href="#" onClick={props.addChild}>Add Another Room</a></h3>
+      <h3><a href="#" onClick={props.addChild} className='buttons'>Add Another Room</a></h3>
       {/* <p><a href="#" onClick={props.removeChild}>Remove Child Component</a></p> */}
       <div id="children-pane">
         {props.children}
@@ -310,7 +319,7 @@ class AppComponent extends React.Component {
         </label>
         <label>
           {/* <input type="number" onChange={e => props.setRooms([{'hi':'hi'}])} id={'input' + props.index} /> */}
-          <input type="button" value='Remove Room' id={'input' + props.index} onClick={e => props.remove(e.target.id)}/>
+          {props.index != 0 && <><br/><input className="buttons" type="button" value='Remove Room' id={'input' + props.index} onClick={e => props.remove(e.target.id)}/></>}
         </label>
       </form>
       </>
