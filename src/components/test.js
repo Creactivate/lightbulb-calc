@@ -12,32 +12,12 @@ class AppComponent extends React.Component {
         'runningTimeHPD': '1',
         'energyCost': '0.44',
         'numberOfBulbsReplaced': '1',
-        'costPerBulb': '2.5',
+        'costPerBulb': '2.50',
         'myRewardDiscount': '0',
         'emissionsPerKwh': '0.193',
       }])),
       results: {},
-      simple: false
-        // {
-        //     roomName: 'testname',
-        //     wattageToBeReplaced: 'test',
-        //     setWattageToBeReplaced: 'test',
-        //     wattageReplacement: 'test',
-        //     setWattageReplacement: 'test',
-        //     runningTimeHPD: 'test',
-        //     setRunningTimeHPD: 'test',
-        //     energyCost: 'test',
-        //     setEnergyCost: 'test',
-        //     numberOfBulbsReplaced: 'test',
-        //     setNumberOfBulbsReplaced: 'test',
-        //     costPerBulb: 'test',
-        //     setCostPerBulb: 'test',
-        //     myRewardDiscount: 'test',
-        //     setMyRewardDiscount: 'test',
-        //     emissionsPerKwh: 'test',
-        //     setEmissionsPerKWH: 'test',
-        // },
-      
+      simple: localStorage.getItem("simple") || "simple"
     }
   
     render () {
@@ -56,6 +36,8 @@ class AppComponent extends React.Component {
       updateNumbers(tmpRooms);
       
       localStorage.setItem("rooms", JSON.stringify(tmpRooms))
+      localStorage.setItem("simple", this.state.simple)
+
       for (var i = 0; i < this.state.rooms.length; i += 1) {
         children.push(<TestRoom key={i} index={i} setRooms={this.onTest} rooms={this.state.rooms[i]} remove={this.onRemoveChild} simple={this.state.simple} />);
       };
@@ -117,21 +99,16 @@ class AppComponent extends React.Component {
           room['myRewardDiscount'] = '0'
         })
 
+        let tempsimple = this.state.simple === 'simple' ? 'advanced' : 'simple'
+
         this.setState({
           rooms: temprooms,
           numChildren: this.state.numChildren,
           results: this.state.results,
-          simple: !this.state.simple
+          simple: tempsimple
         })
-        if (document.getElementById('toggleButton').style.backgroundColor == 'rgb(255, 255, 255)') {
-          document.getElementById('toggleButton').style.backgroundColor = 'rgb(0, 41, 121)';
-          document.getElementById('toggleButton').style.color = 'rgb(255, 255, 255)';
-          // document.getElementById('toggleButton').style.border = '5px solid rgb(255, 255, 255)'
-        }else {
-          document.getElementById('toggleButton').style.backgroundColor = 'rgb(255, 255, 255)';
-          // document.getElementById('toggleButton').style.border = '5px solid rgb(0, 41, 121)'
-          document.getElementById('toggleButton').style.color = 'rgb(0, 41, 121)';
-        }
+
+        localStorage.setItem("simple", this.state.simple)
       }
   
       return (
@@ -140,11 +117,11 @@ class AppComponent extends React.Component {
         <h2>Amount Saved: {formatter.format(calcGlobalValues().savedPerYear)}</h2>
         <div>Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div>
         <div>Return on Investment In First Year: {formatter.format(calcGlobalValues().roiInFirstYear)}</div>
-        <div>Energy Saving Per Year (kWh): {calcGlobalValues().kwhSavingPerYear}</div>
-        <div>Co2 Saving Per Year (kg): {calcGlobalValues().kgCo2SavingPerYear}</div>
+        <div>Energy Saving Per Year (kWh): {Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100}</div>
+        <div>Co2 Saving Per Year (kg): {Math.round((calcGlobalValues().kgCo2SavingPerYear + Number.EPSILON) * 100) / 100}</div>
         <br/>
-        <input id='toggleButton' className='buttons' type='button' value='Toggle Simple/Advanced Fields' onClick={toggleSimple} />
-        {this.state.simple && <p>Asssumptions: CO2 Emissions = 0.193kg/kWh, Energy Cost = £0.44/kWh, My Reward Discount = 0%</p>}
+        <input id='toggleButton' className={this.state.simple === 'advanced'?'buttons advanced':'buttons'} type='button' value='Toggle Simple/Advanced Fields' onClick={() => toggleSimple()} />
+        {this.state.simple === 'simple' ? <p>Asssumptions: Average CO2 Emissions Per kWh = 0.193kg/kWh, Energy Cost = £0.44/kWh, My Reward Discount = 0%</p> : undefined}
         <ParentComponent addChild={this.onAddChild} removeChild={this.onRemoveChild} simple={this.state.simple}>
           {children}
         </ParentComponent>
@@ -162,13 +139,14 @@ class AppComponent extends React.Component {
         'runningTimeHPD': '1',
         'energyCost': '0.44',
         'numberOfBulbsReplaced': '1',
-        'costPerBulb': '2.5',
+        'costPerBulb': '2.50',
         'myRewardDiscount': '0',
         'emissionsPerKwh': '0.193',
       })
       this.setState({
         numChildren: this.state.numChildren + 1,
-        rooms: newRooms
+        rooms: newRooms,
+        simple: this.state.simple
       });
       localStorage.setItem("rooms", JSON.stringify(this.state.rooms))
     }
@@ -177,7 +155,7 @@ class AppComponent extends React.Component {
       let tempState = this.state.rooms
       let removeIndex = 0
       toRemove && tempState.forEach((room, index) => {
-        if (room.name == toRemove) {
+        if (room.name === toRemove) {
           removeIndex = index
           console.log('found', removeIndex)
         }
@@ -189,7 +167,8 @@ class AppComponent extends React.Component {
 
       this.setState({
         numChildren: this.state.numChildren,
-        rooms: tempState
+        rooms: tempState,
+        simple: this.state.simple
       });
       localStorage.setItem("rooms", JSON.stringify(this.state.rooms))
     }
@@ -198,7 +177,7 @@ class AppComponent extends React.Component {
       let tempState = this.state.rooms
       let updateIndex = 0
       roomToUpdate && tempState.forEach((room, index) => {
-        if (room.name == roomToUpdate.name) {
+        if (room.name === roomToUpdate.name) {
           updateIndex = index
           console.log('found', updateIndex)
         }
@@ -210,7 +189,8 @@ class AppComponent extends React.Component {
 
       this.setState({
         numChildren: this.state.numChildren,
-        rooms: tempState
+        rooms: tempState,
+        simple: this.state.simple
       });
       localStorage.setItem("rooms", JSON.stringify(this.state.rooms))
     }
@@ -218,8 +198,7 @@ class AppComponent extends React.Component {
   
   const ParentComponent = props => (
     <div className="card calculator">
-      <h3><a href="#" onClick={props.addChild} className='buttons'>Add Another Room</a></h3>
-      {/* <p><a href="#" onClick={props.removeChild}>Remove Child Component</a></p> */}
+      <h3><input type='button' onClick={props.addChild} className='buttons' value='Add Another Room'/></h3>
       <div id="children-pane">
         {props.children}
       </div>
@@ -229,14 +208,6 @@ class AppComponent extends React.Component {
   const TestRoom = props => {
     
     const [innerRoom, setInnerRoom] = useState(props.rooms)
-        // 'wattageToBeReplaced':0,
-        // 'wattageReplacement':0,
-        // 'runningTimeHPD':0,
-        // 'energyCost':0,
-        // 'numberOfBulbsReplaced':0,
-        // 'costPerBulb':0,
-        // 'myRewardDiscount':0,
-        // 'costToReplace':0,
     
     const print = (updateItem, field) => {
       console.log('hi')
@@ -246,42 +217,6 @@ class AppComponent extends React.Component {
       setInnerRoom(tmpRoom)
       console.log('innerRoom',innerRoom)
       props.setRooms(innerRoom)
-    }
-
-    const inputFields = [
-      'wattageToBeReplaced',
-      'wattageReplacement',
-      'runningTimeHPD',
-      'energyCost',
-      'numberOfBulbsReplaced',
-      'costPerBulb',
-      'myRewardDiscount',
-      'costToReplace'
-    ]
-
-    const outputs = [
-      'roiInFirstYear',
-      'kwhSavingPerYear',
-      'kgCo2SavingPerYear',
-      'savedPerYear',
-      'costToReplace'
-    ]
-
-    // calculate output functions
-    const calcCostToReplace = (tmpCostPerBulb, tmpNumberOfBulbsReplaced, tmpMyRewardDiscount) => {
-      return tmpCostPerBulb * tmpNumberOfBulbsReplaced * ((100 - tmpMyRewardDiscount) / 100)
-    }
-    const calcKwhSavingPerYear = (tmpWattageToBeReplaced, tmpWattageReplacement, tmpRunningTimeHPD, tmpNumberOfBulbsReplaced) => {
-      return ((tmpWattageToBeReplaced - tmpWattageReplacement) * tmpRunningTimeHPD * 365 * tmpNumberOfBulbsReplaced) / 1000
-    }
-    const calcSavedPerYear = (tmpKwhSavingPerYear, tmpEnergyCost) => {
-      return tmpKwhSavingPerYear * tmpEnergyCost;
-    }
-    const calcRoiInFirstYear = (tmpSavedPerYear, tmpCostToReplace) => {
-      return tmpSavedPerYear / tmpCostToReplace;
-    }
-    const calcKgCo2SavingPerYear = (tmpKwhSavingPerYear, tmpEmissions) => {
-      return tmpKwhSavingPerYear * tmpEmissions;
     }
 
     useEffect(() => {
@@ -294,7 +229,7 @@ class AppComponent extends React.Component {
       <form className="calc-form">
         <label>Bulb Wattage (To be replaced)
           {/* <input type="number" value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')} /> */}
-          {props.simple ? <select value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')}>
+          {props.simple === 'simple' ? <select value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')}>
             <option value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
@@ -303,7 +238,7 @@ class AppComponent extends React.Component {
         </label>
         <label>Bulb Wattage (Replacement)
           {/* <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} /> */}
-          {props.simple ? <select value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')}>
+          {props.simple === 'simple' ? <select value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')}>
             <option selected value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
@@ -311,26 +246,26 @@ class AppComponent extends React.Component {
           </select> : <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} />}
         </label>
         <label>Running Time (Hours per day)
-          <input type="number" value={innerRoom.runningTimeHPD} onChange={e => print(e.target.value, 'runningTimeHPD')} />
+          <input type="number" min="0.0" step="0.5" value={innerRoom.runningTimeHPD} onChange={e => print(e.target.value, 'runningTimeHPD')} />
         </label>
-        <label className={props.simple ? 'hideable' : undefined}>Energy Cost (kWh)
-          <input type="number" value={innerRoom.energyCost} onChange={e => print(e.target.value, 'energyCost')} />
+        <label className={props.simple === 'simple' ? 'hideable' : undefined}>Energy Cost (£/kWh)
+          <input type="number" min="0.00" step="0.01" value={innerRoom.energyCost} onChange={e => print(e.target.value, 'energyCost')} />
         </label>
         <label>Number of bulbs replaced
           <input type="number" value={innerRoom.numberOfBulbsReplaced || 0} onChange={e => print(parseInt(e.target.value), 'numberOfBulbsReplaced')} />
         </label>
-        <label>Cost per bulb
-          <input type="number" value={innerRoom.costPerBulb} onChange={e => print(e.target.value, 'costPerBulb')} />
+        <label>Cost per bulb (£)
+          <input type="number" min="0.00" step="0.01" value={innerRoom.costPerBulb} onChange={e => print(e.target.value, 'costPerBulb')} />
         </label>
-        <label className={props.simple ? 'hideable' : undefined}>MyReward Discount
+        <label className={props.simple === 'simple' ? 'hideable' : undefined}>MyReward Discount (%)
           <input type="number" value={innerRoom.myRewardDiscount} onChange={e => print(e.target.value, 'myRewardDiscount')} />
         </label>
-        <label className={props.simple ? 'hideable' : undefined}>CO2 Emissions (kg/kWh)
-          <input type="number" value={innerRoom.emissionsPerKwh || 0} onChange={e => print(e.target.value, 'emissionsPerKwh')} />
+        <label className={props.simple === 'simple' ? 'hideable' : undefined}>Average CO2 Emissions Per kWh (kg/kWh)
+          <input type="number" min="0.000" step="0.001" value={innerRoom.emissionsPerKwh || 0} onChange={e => print(e.target.value, 'emissionsPerKwh')} />
         </label>
         <label>
           {/* <input type="number" onChange={e => props.setRooms([{'hi':'hi'}])} id={'input' + props.index} /> */}
-          {props.index != 0 && <><br/><input className="buttons" type="button" value='Remove Room' id={'input' + props.index} onClick={e => props.remove(e.target.id)}/></>}
+          {props.index !== 0 && <><br/><input className="buttons" type="button" value='Remove Room' id={'input' + props.index} onClick={e => props.remove(e.target.id)}/></>}
         </label>
       </form>
       </>
