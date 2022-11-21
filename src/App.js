@@ -94,13 +94,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Lightbulb Savings Calculator</h1>
-      <h2>Amount Saved: {formatter.format(savedPerYear)}</h2>
-      <div>Cost to replace: {formatter.format(costToReplace)}</div>
-      <div>Return on Investment In First Year: {formatter.format(roiInFirstYear)}</div>
-      <div>Energy Saving Per Year (kWh): {kwhSavingPerYear}</div>
-      <div>Co2 Saving Per Year (kg): {kgCo2SavingPerYear}</div>
-      <br/>
+
       <AppComponent></AppComponent>
     </div>
   );
