@@ -107,8 +107,18 @@ class AppComponent extends React.Component {
       }
 
       const toggleSimple = () => {
+        const temprooms = this.state.rooms
+        
+        temprooms.forEach(room => {
+          room['wattageToBeReplaced'] = '100'
+          room['wattageReplacement'] = '13'
+          room['emissionsPerKwh'] = '0.193'
+          room['energyCost'] = '0.44'
+          room['myRewardDiscount'] = '0'
+        })
+
         this.setState({
-          rooms: this.state.rooms,
+          rooms: temprooms,
           numChildren: this.state.numChildren,
           results: this.state.results,
           simple: !this.state.simple
@@ -134,6 +144,7 @@ class AppComponent extends React.Component {
         <div>Co2 Saving Per Year (kg): {calcGlobalValues().kgCo2SavingPerYear}</div>
         <br/>
         <input id='toggleButton' className='buttons' type='button' value='Toggle Simple/Advanced Fields' onClick={toggleSimple} />
+        {this.state.simple && <p>Asssumptions: CO2 Emissions = 0.193kg/kWh, Energy Cost = £0.44/kWh, My Reward Discount = 0%</p>}
         <ParentComponent addChild={this.onAddChild} removeChild={this.onRemoveChild} simple={this.state.simple}>
           {children}
         </ParentComponent>
@@ -283,21 +294,21 @@ class AppComponent extends React.Component {
       <form className="calc-form">
         <label>Bulb Wattage (To be replaced)
           {/* <input type="number" value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')} /> */}
-          <select value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')}>
+          {props.simple ? <select value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')}>
             <option value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
-            <option value='100'>Standard (100W)</option>
-          </select>         
+            <option selected value='100'>Standard (100W)</option>
+          </select> : <input type="number" value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')} />}
         </label>
         <label>Bulb Wattage (Replacement)
           {/* <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} /> */}
-          <select value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')}>
-            <option value='13'>LED (13W)</option>
+          {props.simple ? <select value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')}>
+            <option selected value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
             <option value='100'>Standard (100W)</option>
-          </select>
+          </select> : <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} />}
         </label>
         <label>Running Time (Hours per day)
           <input type="number" value={innerRoom.runningTimeHPD} onChange={e => print(e.target.value, 'runningTimeHPD')} />

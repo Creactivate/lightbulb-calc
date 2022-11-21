@@ -54,7 +54,7 @@ label {
   padding: 10px 0;
 }
 
-div, h1, h2, h3 {
+p, div, h1, h2, h3 {
   font-family: NBS, ArialNarrow, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   color: rgb(0, 41, 121);
 }
