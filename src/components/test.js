@@ -45,22 +45,34 @@ class AppComponent extends React.Component {
       const calcGlobalValues = () => {
         let costToReplace = 0;
         let kwhSavingPerYear = 0;
-        let savedPerYear = 0;
+        let savedInFirstYear = 0;
+        let grossSavedPerYear = 0;
         let roiInFirstYear = 0;
         let kgCo2SavingPerYear = 0;
+        let currentCost = 0;
+        let newCost = 0;
         
         // calculate output functions
         const calcCostToReplace = (tmpCostPerBulb, tmpNumberOfBulbsReplaced, tmpMyRewardDiscount) => {
           return tmpCostPerBulb * tmpNumberOfBulbsReplaced * ((100 - tmpMyRewardDiscount) / 100)
         }
+        const calcCurrentCost = (tmpWattageToBeReplaced, tmpRunningTimeHPD, tmpNumberOfBulbsReplaced, tmpEnergyCost) => {
+          return ((tmpWattageToBeReplaced * tmpRunningTimeHPD * 365 * tmpNumberOfBulbsReplaced) / 1000) * tmpEnergyCost
+        }
+        const calcNewCost = (tmpWattageReplacement, tmpRunningTimeHPD, tmpNumberOfBulbsReplaced, tmpEnergyCost) => {
+          return ((tmpWattageReplacement * tmpRunningTimeHPD * 365 * tmpNumberOfBulbsReplaced) / 1000) * tmpEnergyCost
+        }
         const calcKwhSavingPerYear = (tmpWattageToBeReplaced, tmpWattageReplacement, tmpRunningTimeHPD, tmpNumberOfBulbsReplaced) => {
           return ((tmpWattageToBeReplaced - tmpWattageReplacement) * tmpRunningTimeHPD * 365 * tmpNumberOfBulbsReplaced) / 1000
         }
-        const calcSavedPerYear = (tmpKwhSavingPerYear, tmpEnergyCost) => {
-          return tmpKwhSavingPerYear * tmpEnergyCost;
+        const calcSavedInFirstYear = (tmpKwhSavingPerYear, tmpEnergyCost, tmpCostToReplace) => {
+          return (tmpKwhSavingPerYear * tmpEnergyCost) - tmpCostToReplace;
+        }
+        const calcGrossSavedPerYear = (tmpKwhSavingPerYear, tmpEnergyCost) => {
+          return (tmpKwhSavingPerYear * tmpEnergyCost);
         }
         const calcRoiInFirstYear = (tmpSavedPerYear, tmpCostToReplace) => {
-          return tmpSavedPerYear / tmpCostToReplace;
+          return ((tmpSavedPerYear - tmpCostToReplace) / tmpCostToReplace) * 100;
         }
         const calcKgCo2SavingPerYear = (tmpKwhSavingPerYear, tmpEmissions) => {
           return tmpKwhSavingPerYear * tmpEmissions;
@@ -69,22 +81,31 @@ class AppComponent extends React.Component {
         this.state.rooms.forEach((room) => {
           let tempcostToReplace = calcCostToReplace(room.costPerBulb, room.numberOfBulbsReplaced, room.myRewardDiscount)
           let tempkwhSavingPerYear = calcKwhSavingPerYear(room.wattageToBeReplaced, room.wattageReplacement, room.runningTimeHPD, room.numberOfBulbsReplaced)
-          let tempsavedPerYear = calcSavedPerYear(tempkwhSavingPerYear, room.energyCost)
-          let temproiInFirstYear = calcRoiInFirstYear(tempsavedPerYear, tempcostToReplace)
+          let tempsavedInFirstYear = calcSavedInFirstYear(tempkwhSavingPerYear, room.energyCost, tempcostToReplace)
+          let tempGrossSavedPerYear = calcGrossSavedPerYear(tempkwhSavingPerYear, room.energyCost)
+          let temproiInFirstYear = calcRoiInFirstYear(tempsavedInFirstYear, tempcostToReplace)
           let tempkgCo2SavingPerYear = calcKgCo2SavingPerYear(tempkwhSavingPerYear, room.emissionsPerKwh)
+          let tempcurrentCost = calcCurrentCost(room.wattageToBeReplaced, room.runningTimeHPD, room.numberOfBulbsReplaced, room.energyCost)
+          let tempnewCost = calcNewCost(room.wattageReplacement, room.runningTimeHPD, room.numberOfBulbsReplaced, room.energyCost)
           costToReplace += tempcostToReplace 
           kwhSavingPerYear += tempkwhSavingPerYear 
-          savedPerYear += tempsavedPerYear 
+          savedInFirstYear += tempsavedInFirstYear 
           roiInFirstYear += temproiInFirstYear 
-          kgCo2SavingPerYear += tempkgCo2SavingPerYear 
+          kgCo2SavingPerYear += tempkgCo2SavingPerYear
+          currentCost += tempcurrentCost
+          newCost += tempnewCost
+          grossSavedPerYear += tempGrossSavedPerYear
         })
 
         return {
           costToReplace,
           kwhSavingPerYear,
-          savedPerYear,
+          savedInFirstYear,
           roiInFirstYear,
-          kgCo2SavingPerYear
+          kgCo2SavingPerYear,
+          currentCost,
+          newCost,
+          grossSavedPerYear
         }
       }
 
@@ -114,12 +135,22 @@ class AppComponent extends React.Component {
       return (
         <>
         <h1>Lightbulb Savings Calculator</h1>
-        <h2>Amount Saved: {formatter.format(calcGlobalValues().savedPerYear)}</h2>
-        <div>Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div>
-        <div>Return on Investment In First Year: {formatter.format(calcGlobalValues().roiInFirstYear)}</div>
-        <div>Energy Saving Per Year (kWh): {Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100}</div>
-        <div>Co2 Saving Per Year (kg): {Math.round((calcGlobalValues().kgCo2SavingPerYear + Number.EPSILON) * 100) / 100}</div>
+        <h2>Amount Saved in First Year: {formatter.format(calcGlobalValues().savedInFirstYear)}</h2>
+        <h3>Energy Saving Per Year (kWh): {Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100}</h3>
+        <div className="bold">Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div>
         <br/>
+        <details>
+        <summary>More Details</summary>
+        {/* <div className="details">Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div> */}
+        <div className="details">Return on Investment in First Year: {Math.round((calcGlobalValues().roiInFirstYear + Number.EPSILON) * 100) / 100}%</div>
+        <div className="details">Current Cost to Run Per Year: {formatter.format(calcGlobalValues().currentCost)}</div>
+        <div className="details">Replaced Cost to Run Per Year: {formatter.format(calcGlobalValues().newCost)}</div>
+        <div className="details">Gross Savings Per Year: {formatter.format(calcGlobalValues().grossSavedPerYear)}</div>
+        <div className="details">Energy Saving Per Year (kWh): {Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100}</div>
+        <div className="details last">Co2 Saving Per Year (kg): {Math.round((calcGlobalValues().kgCo2SavingPerYear + Number.EPSILON) * 100) / 100}</div>
+        
+        </details>
+        
         <input id='toggleButton' className={this.state.simple === 'advanced'?'buttons advanced':'buttons'} type='button' value='Toggle Simple/Advanced Fields' onClick={() => toggleSimple()} />
         {this.state.simple === 'simple' ? <p>Asssumptions: Average CO2 Emissions Per kWh = 0.193kg/kWh, Energy Cost = £0.44/kWh, My Reward Discount = 0%</p> : undefined}
         <ParentComponent addChild={this.onAddChild} removeChild={this.onRemoveChild} simple={this.state.simple}>
