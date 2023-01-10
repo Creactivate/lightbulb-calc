@@ -32,6 +32,20 @@ class AppComponent extends React.Component {
 
       const formatter = new Intl.NumberFormat("en-GB", {style: "currency", currency: "GBP", minimumFractionDigits: 2})
 
+      const copyToClipboard = () => {
+        const results_to_clipboard = {
+          'Return on Investment in First Year':Math.round((calcGlobalValues().roiInFirstYear + Number.EPSILON) * 100) / 100 + '%',
+          'Current Cost to Run Per Year':formatter.format(calcGlobalValues().currentCost),
+          'Replaced Cost to Run Per Year':formatter.format(calcGlobalValues().newCost),
+          'Gross Savings Per Year':formatter.format(calcGlobalValues().grossSavedPerYear),
+          'Energy Saving Per Year (kWh)':Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100,
+          'Co2 Saving Per Year (kg)':Math.round((calcGlobalValues().kgCo2SavingPerYear + Number.EPSILON) * 100) / 100,
+        }
+        console.log(results_to_clipboard);navigator.clipboard.writeText(JSON.stringify(results_to_clipboard))
+        document.querySelector('.copied').style.visibility = 'visible'
+        setTimeout(()=>{document.querySelector('.copied').style.visibility = 'hidden'},3000)
+      }
+
 
       updateNumbers(tmpRooms);
       
@@ -135,11 +149,13 @@ class AppComponent extends React.Component {
       return (
         <>
         <h1>Lightbulb Savings Calculator</h1>
-        <h2>Amount Saved in First Year: {formatter.format(calcGlobalValues().savedInFirstYear)}</h2>
+        <div className="flex"><h2 className="heading">Amount Saved in First Year: {formatter.format(calcGlobalValues().savedInFirstYear)}</h2><button className="clip" onClick={() => copyToClipboard()}><span class="material-symbols-outlined">content_copy</span></button>
+        <div className="copied">copied results to clipboard!</div></div>
         <h3>Energy Saving Per Year (kWh): {Math.round((calcGlobalValues().kwhSavingPerYear + Number.EPSILON) * 100) / 100}</h3>
         <div className="bold">Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div>
         <br/>
         <details>
+        
         <summary>More Details</summary>
         {/* <div className="details">Cost to replace: {formatter.format(calcGlobalValues().costToReplace)}</div> */}
         <div className="details">Return on Investment in First Year: {Math.round((calcGlobalValues().roiInFirstYear + Number.EPSILON) * 100) / 100}%</div>
@@ -261,18 +277,22 @@ class AppComponent extends React.Component {
         <label>Bulb Wattage (To be replaced)
           {/* <input type="number" value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')} /> */}
           {props.simple === 'simple' ? <select value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')}>
+            <option value='7'>LED (7W)</option>
             <option value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
+            <option value='60'>Standard (60W)</option>
             <option selected value='100'>Standard (100W)</option>
           </select> : <input type="number" value={innerRoom.wattageToBeReplaced} onChange={e => print(parseInt(e.target.value), 'wattageToBeReplaced')} />}
         </label>
         <label>Bulb Wattage (Replacement)
           {/* <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} /> */}
           {props.simple === 'simple' ? <select value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')}>
+            <option selected value='7'>LED (7W)</option>
             <option selected value='13'>LED (13W)</option>
             <option value='70'>Halogen (70W)</option>
             <option value='20'>CFL (20W)</option>
+            <option value='60'>Standard (60W)</option>
             <option value='100'>Standard (100W)</option>
           </select> : <input type="number" value={innerRoom.wattageReplacement} onChange={e => print(parseInt(e.target.value), 'wattageReplacement')} />}
         </label>
