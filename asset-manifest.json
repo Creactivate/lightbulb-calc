@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/lightbulb-calc/static/css/main.b897b490.css",
-    "main.js": "/lightbulb-calc/static/js/main.56c38d5c.js",
+    "main.css": "/lightbulb-calc/static/css/main.6f72ce84.css",
+    "main.js": "/lightbulb-calc/static/js/main.22dc2ecd.js",
     "static/js/787.8af7121f.chunk.js": "/lightbulb-calc/static/js/787.8af7121f.chunk.js",
     "index.html": "/lightbulb-calc/index.html",
-    "main.b897b490.css.map": "/lightbulb-calc/static/css/main.b897b490.css.map",
-    "main.56c38d5c.js.map": "/lightbulb-calc/static/js/main.56c38d5c.js.map",
+    "main.6f72ce84.css.map": "/lightbulb-calc/static/css/main.6f72ce84.css.map",
+    "main.22dc2ecd.js.map": "/lightbulb-calc/static/js/main.22dc2ecd.js.map",
     "787.8af7121f.chunk.js.map": "/lightbulb-calc/static/js/787.8af7121f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b897b490.css",
-    "static/js/main.56c38d5c.js"
+    "static/css/main.6f72ce84.css",
+    "static/js/main.22dc2ecd.js"
   ]
 }
